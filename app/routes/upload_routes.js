@@ -6,6 +6,7 @@ const Upload = require('../models/upload')
 const router = express.Router()
 const s3Upload = require('../../lib/s3_upload')
 
+// compression may have to work around multer (before/after)
 router.post('/uploads', upload.single('upload'), (req, res, next) => {
   console.log(req.file)
   // compression function would need to go here
