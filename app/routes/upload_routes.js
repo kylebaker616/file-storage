@@ -1,5 +1,6 @@
 const express = require('express')
 const multer = require('multer')
+const sharp = require('sharp')
 const passport = require('passport')
 const customErrors = require('../../lib/custom_errors')
 const handle404 = customErrors.handle404
@@ -10,6 +11,7 @@ const upload = multer({ storage })
 const Upload = require('../models/upload')
 const router = express.Router()
 const s3Upload = require('../../lib/s3_upload')
+const s3Delete = require('../../lib/s3_delete')
 
 // compression may have to work around multer (before/after)
 router.post('/uploads', upload.single('upload'), requireToken, (req, res, next) => {
@@ -18,7 +20,7 @@ router.post('/uploads', upload.single('upload'), requireToken, (req, res, next) 
   // compression function would need to go here
   // https://www.npmjs.com/package/compressing
   // const compressing = require('compressing');
-
+  // compress(req.file) .then s3Upload
   // compress a file
   // compressing.gzip.compressFile('file/path/to/compress', 'path/to/destination.gz')
   // .then(compressDone)
@@ -27,7 +29,7 @@ router.post('/uploads', upload.single('upload'), requireToken, (req, res, next) 
   s3Upload(req.file)
     .then((awsFile) => {
       console.log(awsFile)
-      return Upload.create({ url: awsFile.Location, owner: req.user.id })
+      return Upload.create({ url: awsFile.Location, owner: req.user.id, mimetype: req.file.mimetype, key: awsFile.key })
     })
   // { upload: { url: 'wwww.example.com' }}
     .then((uploadDoc) => {
@@ -42,6 +44,21 @@ router.get('/uploads', requireToken, (req, res, next) => {
       return uploads.map((upload) => upload.toObject())
     })
     .then((uploads) => res.status(200).json({ uploads: uploads }))
+    .catch(next)
+})
+router.delete('/uploads/:id', requireToken, (req, res, next) => {
+//   s3Delete(req)
+  Upload.findById(req.params.id)
+    .then(handle404)
+    .then((upload) => {
+      // throw an error if current user doesn't own `cart`
+      requireOwnership(req, upload)
+      // delete the cart ONLY IF the above didn't throw
+      upload.deleteOne()
+    })
+  // send back 204 and no content if the deletion succeeded
+    .then(() => res.sendStatus(204))
+  // if an error occurs, pass it to the handler
     .catch(next)
 })
 

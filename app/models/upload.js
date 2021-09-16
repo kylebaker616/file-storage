@@ -10,6 +10,12 @@ const uploadSchema = new mongoose.Schema(
       type: mongoose.Schema.Types.ObjectId,
       ref: 'User',
       required: true
+    },
+    mimetype: {
+      type: String
+    },
+    key: {
+      type: String
     }
   },
   {
