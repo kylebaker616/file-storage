@@ -1,4 +1,7 @@
 const mongoose = require('mongoose')
+const friendSchema = require('./friend')
+const requestSchema = require('./request')
+const sentRequestsSchema = require('./sent_requests')
 
 const userSchema = new mongoose.Schema({
   email: {
@@ -10,7 +13,10 @@ const userSchema = new mongoose.Schema({
     type: String,
     required: true
   },
-  token: String
+  token: String,
+  friends: [friendSchema],
+  requests: [requestSchema],
+  sentRequests: [sentRequestsSchema]
 }, {
   timestamps: true,
   toObject: {

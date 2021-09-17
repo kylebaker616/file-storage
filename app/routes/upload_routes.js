@@ -47,7 +47,7 @@ router.get('/uploads', requireToken, (req, res, next) => {
     .catch(next)
 })
 router.delete('/uploads/:id', requireToken, (req, res, next) => {
-//   s3Delete(req)
+  s3Delete(req)
   Upload.findById(req.params.id)
     .then(handle404)
     .then((upload) => {
