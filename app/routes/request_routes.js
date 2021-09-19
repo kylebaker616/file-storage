@@ -47,14 +47,11 @@ router.post('/requests', requireToken, (req, res, next) => {
     .then((user) => {
       // return status 201, the email, and the new token
       res.status(201).json({ user: user.toObject() })
-      User.findById(req.user.id)
-        .then((self) => {
-          self.requests.push({
-            recipient: req.body.request.recipient,
-            sender: req.user.id
-          })
-        })
+      //   User.findById(req.user.id)
+      //     .then((self) => {
+
+      // })
+        .catch(next)
     })
-    .catch(next)
 })
 module.exports = router
