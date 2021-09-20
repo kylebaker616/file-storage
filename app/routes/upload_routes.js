@@ -61,5 +61,12 @@ router.delete('/uploads/:id', requireToken, (req, res, next) => {
   // if an error occurs, pass it to the handler
     .catch(next)
 })
-
+router.get('/frienduploads/:id', (req, res, next) => {
+  Upload.find({ owner: req.params.id })
+    .then((uploads) => {
+      return uploads.map((upload) => upload.toObject())
+    })
+    .then((uploads) => res.status(200).json({ uploads: uploads }))
+    .catch(next)
+})
 module.exports = router
