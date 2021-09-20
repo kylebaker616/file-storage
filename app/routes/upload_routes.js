@@ -69,4 +69,18 @@ router.get('/frienduploads/:id', (req, res, next) => {
     .then((uploads) => res.status(200).json({ uploads: uploads }))
     .catch(next)
 })
+router.post('/pins', requireToken, (req, res, next) => {
+  // set owner of new example to be current user
+  req.body.upload.owner = req.user.id
+
+  Upload.create(req.body.upload)
+  // respond to succesful `create` with status 201 and JSON of new "example"
+    .then((upload) => {
+      res.status(201).json({ upload: upload.toObject() })
+    })
+  // if an error occurs, pass it off to our error handler
+  // the error handler needs the error message and the `res` object so that it
+  // can send an error message back to the client
+    .catch(next)
+})
 module.exports = router
