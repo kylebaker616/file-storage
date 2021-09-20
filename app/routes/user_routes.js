@@ -11,7 +11,7 @@ const bcryptSaltRounds = 10
 
 // pull in error types and the logic to handle them and set status codes
 const errors = require('../../lib/custom_errors')
-
+const handle404 = errors.handle404
 const BadParamsError = errors.BadParamsError
 const BadCredentialsError = errors.BadCredentialsError
 
@@ -45,6 +45,7 @@ router.post('/sign-up', (req, res, next) => {
       // return necessary params to create a user
       return {
         email: req.body.credentials.email,
+        username: req.body.credentials.username,
         hashedPassword: hash
       }
     })
@@ -64,7 +65,7 @@ router.post('/sign-in', (req, res, next) => {
   let user
 
   // find a user based on the email that was passed
-  User.findOne({ email: req.body.credentials.email })
+  User.findOne({ username: req.body.credentials.username })
     .then(record => {
       // if we didn't find a user with that email, send 401
       if (!record) {
@@ -135,6 +136,20 @@ router.delete('/sign-out', requireToken, (req, res, next) => {
   // save the token and respond with 204
   req.user.save()
     .then(() => res.sendStatus(204))
+    .catch(next)
+})
+router.post('/users', requireToken, (req, res, next) => {
+  console.log(req.body)
+  User.findOne({ username: req.body.recipient.username })
+    .then(handle404)
+    .then((user) => res.status(200).json({ user: user }))
+    .catch(next)
+})
+router.post('/userrequests', requireToken, (req, res, next) => {
+  console.log(req.body)
+  User.findOne({ _id: req.body.sender.id })
+    .then(handle404)
+    .then((user) => res.status(200).json({ user: user }))
     .catch(next)
 })
 
