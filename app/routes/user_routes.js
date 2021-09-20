@@ -145,5 +145,12 @@ router.post('/users', requireToken, (req, res, next) => {
     .then((user) => res.status(200).json({ user: user }))
     .catch(next)
 })
+router.post('/userrequests', requireToken, (req, res, next) => {
+  console.log(req.body)
+  User.findOne({ _id: req.body.sender.id })
+    .then(handle404)
+    .then((user) => res.status(200).json({ user: user }))
+    .catch(next)
+})
 
 module.exports = router

@@ -51,7 +51,23 @@ router.post('/requests', requireToken, (req, res, next) => {
       //     .then((self) => {
 
       // })
-        .catch(next)
     })
+})
+router.delete('/requests/:id', requireToken, (req, res, next) => {
+  User.findById(req.params.id)
+    .then(handle404)
+    .then((user) => {
+      console.log(user.requests)
+      console.log(req.body)
+      // throw an error if current user doesn't own `example`
+      //   requireOwnership(req, user)
+      // delete the example ONLY IF the above didn't throw
+      user.requests.id(req.body.request.id).remove()
+      return user.save()
+    })
+  // send back 204 and no content if the deletion succeeded
+    .then((user) => res.status(201).json({ user: user.toObject() }))
+  // if an error occurs, pass it to the handler
+    .catch(next)
 })
 module.exports = router
