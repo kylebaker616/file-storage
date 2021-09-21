@@ -33,6 +33,6 @@ const userSchema = new mongoose.Schema({
     }
   }
 })
-userSchema.plugin(uniqueValidator)
+// userSchema.plugin(uniqueValidator)
 
 module.exports = mongoose.model('User', userSchema)
