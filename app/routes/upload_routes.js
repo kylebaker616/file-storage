@@ -1,6 +1,5 @@
 const express = require('express')
 const multer = require('multer')
-const sharp = require('sharp')
 const passport = require('passport')
 const customErrors = require('../../lib/custom_errors')
 const handle404 = customErrors.handle404
